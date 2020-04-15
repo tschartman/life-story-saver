@@ -1,28 +1,34 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <v-content>
+      <RecipeView @scrapeWeb="scrapeWeb" :ingredients="ingredients" :directions="directions" />
+    </v-content>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import RecipeView from './components/RecipeView';
+import axios from 'axios';
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  components: {
+    RecipeView,
+  },
+
+  data: () => ({
+    ingredients: [],
+    directions: []
+  }),
+  methods: {
+    async scrapeWeb(url){
+      const webData = await axios.post("https://recipe-parser-api.herokuapp.com/recipe", {url: url});
+      if(webData.status === 200){
+        this.ingredients = webData.data.ingredients;
+        this.directions = webData.data.directions;
+      }
+      console.log(this.ingredients)
+    }
+  }
+};
+</script>
